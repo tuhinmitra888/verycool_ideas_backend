@@ -1,17 +1,8 @@
+const fs = require('fs');
+const path = require('path');
 const { ApolloServer } = require('apollo-server');
 
-const typeDefs = `
-  type Query {
-    ideas: [Idea!]!
-  }
 
-  type Idea{
-      id: ID!
-      type: String!
-      name: String!
-      description: String!
-  }
-`
 let ideas = [{
   id: 'idea-0',
   type: 'Hustle-Ideas',
@@ -23,16 +14,26 @@ const resolvers = {
   Query: {
     ideas: () => ideas
   },
-  Idea:{
-    id: (parent) => parent.id,
-    type: (parent) => parent.type,
-    name: (parent) => parent.name,
-    description: (parent) => parent.description,
-  }
+
+  Mutation: {
+    post: (parent, args) => {
+    let idCount = ideas.length
+       const idea = {
+        id: `idea-${idCount++}`,
+        description: args.description,
+        url: args.url,
+      }
+      ideas.push(idea)
+      return idea
+    }
+  },
 }
 
 const server = new ApolloServer({
-  typeDefs,
+  typeDefs: fs.readFileSync(
+    path.join(__dirname, 'schema.graphql'),
+    'utf8'
+  ),
   resolvers,
 })
 
@@ -40,4 +41,4 @@ server
   .listen()
   .then(({ url }) =>
     console.log(`Server is running on ${url}`)
-  );
+);

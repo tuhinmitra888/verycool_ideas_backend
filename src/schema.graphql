@@ -1,0 +1,14 @@
+  type Query {
+    ideas: [Idea!]!
+  }
+
+  type Mutation{
+    post(type: String!, name: String!, description: String!): Idea!
+  }
+
+  type Idea{
+      id: ID!
+      type: String!
+      name: String!
+      description: String!
+  }
