@@ -1,33 +1,32 @@
 const fs = require('fs');
 const path = require('path');
 const { ApolloServer } = require('apollo-server');
+const { PrismaClient } = require('.prisma/client');
 
 
-let ideas = [{
-  id: 'idea-0',
-  type: 'Hustle-Ideas',
-  name: 'weekend-food-truck',
-  description: 'feed them all'  
-}]
 
 const resolvers = {
   Query: {
-    ideas: () => ideas
+    ideas: async (parent, args, context) => {
+      return context.prisma.idea.findMany()
+    }
   },
 
   Mutation: {
-    post: (parent, args) => {
-    let idCount = ideas.length
-       const idea = {
-        id: `idea-${idCount++}`,
-        description: args.description,
-        url: args.url,
-      }
-      ideas.push(idea)
-      return idea
+    post: (parent, args, context) => {
+      const newIdea = context.prisma.idea.create({
+        data:{
+          type: args.type,
+          name: args.name,
+          description: args.description,
+        },
+      })
+      return newIdea
     }
   },
 }
+
+const prisma = new PrismaClient()
 
 const server = new ApolloServer({
   typeDefs: fs.readFileSync(
@@ -35,6 +34,9 @@ const server = new ApolloServer({
     'utf8'
   ),
   resolvers,
+  context:{
+    prisma,
+  }
 })
 
 server
