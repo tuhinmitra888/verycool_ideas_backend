@@ -1,21 +1,24 @@
-// 1
-const { PrismaClient } = require("@prisma/client")
+const { PrismaClient } = require('@prisma/client')
 
-// 2
 const prisma = new PrismaClient()
 
-// 3
 async function main() {
+  const newIdea = await prisma.idea.create({
+    data: {
+      type: 'Hobbies',
+      name: 'Wood pecking',
+      description: 'Kill time productively',
+    },
+  })
+  console.log(newIdea)
   const allIdeas = await prisma.idea.findMany()
   console.log(allIdeas)
 }
 
-// 4
 main()
-  .catch(e => {
+  .catch((e) => {
     throw e
   })
-  // 5
   .finally(async () => {
     await prisma.$disconnect()
   })

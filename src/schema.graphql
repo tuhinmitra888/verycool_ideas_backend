@@ -1,14 +1,29 @@
-  type Query {
-    ideas: [Idea!]!
-  }
+type Query {
+  ideas: [Idea!]!
+}
 
-  type Mutation{
-    post(type: String!, name: String!, description: String!): Idea!
-  }
+type Mutation {
+  post(type: String!, name: String!, description: String!): Idea!
+  signup(name: String!, email: String!, password: String!): AuthPayload
+  login(email: String!, password: String!): AuthPayload
+}
 
-  type Idea{
-      id: ID!
-      type: String!
-      name: String!
-      description: String!
-  }
+type Idea {
+  id: ID!
+  type: String!
+  name: String!
+  description: String!
+  postedBy: User
+}
+
+type AuthPayload {
+  token: String
+  user: User
+}
+
+type User {
+  id: ID!
+  name: String!
+  email: String!
+  ideas: [Idea!]!
+}

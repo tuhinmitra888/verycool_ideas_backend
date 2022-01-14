@@ -1,29 +1,18 @@
-const fs = require('fs');
-const path = require('path');
-const { ApolloServer } = require('apollo-server');
-const { PrismaClient } = require('.prisma/client');
-
-
+const fs = require('fs')
+const path = require('path')
+const { ApolloServer } = require('apollo-server')
+const { PrismaClient } = require('.prisma/client')
+const {getUserId} = require('./utils')
+const Query = require('./resolvers/Query')
+const Mutation = require('./resolvers/Mutation')
+const User = require('./resolvers/User')
+const Idea = require('./resolvers/Idea')
 
 const resolvers = {
-  Query: {
-    ideas: async (parent, args, context) => {
-      return context.prisma.idea.findMany()
-    }
-  },
-
-  Mutation: {
-    post: (parent, args, context) => {
-      const newIdea = context.prisma.idea.create({
-        data:{
-          type: args.type,
-          name: args.name,
-          description: args.description,
-        },
-      })
-      return newIdea
-    }
-  },
+  Query,
+  Mutation,
+  User,
+  Idea
 }
 
 const prisma = new PrismaClient()
@@ -34,13 +23,16 @@ const server = new ApolloServer({
     'utf8'
   ),
   resolvers,
-  context:{
-    prisma,
+  context: ({ req }) => {
+    return {
+      ...req,
+      prisma,
+      userId:
+        req && req.headers.authorization
+          ? getUserId(req)
+          : null
+    };
   }
 })
 
-server
-  .listen()
-  .then(({ url }) =>
-    console.log(`Server is running on ${url}`)
-);
+server.listen().then(({ url }) => console.log(`Server is running on ${url}`))
