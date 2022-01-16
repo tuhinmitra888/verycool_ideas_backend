@@ -19,7 +19,16 @@ Steps:
 * Alternatively running `npm test` will run the tests in the `test` folder and run the application
 
 # How to functionally test the GraphQL API
-User sign up:
+* User sign up:
+```
+mutation {
+  signup(name: "Test User 1", email: "testuser@prisma.io", password: "graphql124") {
+    token
+    user {
+      id
+    }
+}
+```
 User Login:
 Post ideas:
 Fetch posted ideas:
