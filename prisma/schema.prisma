@@ -18,6 +18,7 @@ model Idea {
   description String
   postedBy    User?   @relation(fields: [postedById], references: [id])
   postedById  String?
+  createdAt   DateTime @default(now())
 }
 
 model User {
